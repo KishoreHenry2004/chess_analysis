@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Analysis Website</title>
+    <link rel="stylesheet" href="index.css">
+
+</head>
+<body>
+    <div class="header">Well-known Chess Game Analysis</div>
+    <div class="container">
+        <div class="game-list">
+            <h2>Games</h2>
+            <div class="game" onclick="loadGame('kasparov-topalov')">Kasparov vs Topalov (1999)</div>
+            <div class="game" onclick="loadGame('fischer-spassky')">Fischer vs Spassky (1972)</div>
+            <div class="game" onclick="loadGame('carlsen-anand')">Carlsen vs Anand (2014)</div>
+        </div>
+        <div class="scoresheet">
+            <h2>Scoresheet</h2>
+            <table id="scoresheet">
+                <thead>
+                    <tr>
+                        <th>Moves</th>
+                        <th>White</th>
+                        <th>Black</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Default game: Kasparov vs Topalov (1999) -->
+                </tbody>
+            </table>
+        </div>
+        <div class="chess-container">
+            <!-- Chessboard ranks -->
+            <div class="rank" style="top: 25px;">8</div>
+            <div class="rank" style="top: 75px;">7</div>
+            <div class="rank" style="top: 125px;">6</div>
+            <div class="rank" style="top: 175px;">5</div>
+            <div class="rank" style="top: 225px;">4</div>
+            <div class="rank" style="top: 275px;">3</div>
+            <div class="rank" style="top: 325px;">2</div>
+            <div class="rank" style="top: 375px;">1</div>
+        
+            <!-- Chessboard files -->
+            <div class="file" style="left: 25px;">a</div>
+            <div class="file" style="left: 75px;">b</div>
+            <div class="file" style="left: 125px;">c</div>
+            <div class="file" style="left: 175px;">d</div>
+            <div class="file" style="left: 225px;">e</div>
+            <div class="file" style="left: 275px;">f</div>
+            <div class="file" style="left: 325px;">g</div>
+            <div class="file" style="left: 375px;">h</div>
+        
+            <div class="chess-board" id="chess-board">
+            <!-- Chessboard will be generated here -->
+            </div>
+        
+            <div class="stats" id="stats">
+                <div class="stats-column stats-labels">
+                    <h3>Stats</h3>
+                    <div class="stats-row">Accuracy</div>
+                    <div class="stats-row">Brilliant</div>
+                    <div class="stats-row">Best</div>
+                    <div class="stats-row">Good</div>
+                    <div class="stats-row">Inaccuracy</div>
+                    <div class="stats-row">Mistakes</div>
+                    <div class="stats-row">Blunders</div>
+                </div>
+                <div class="stats-column stats-values" id="white-stats">
+                    <h3>White</h3>
+                </div>
+                <div class="stats-column stats-values" id="black-stats">
+                    <h3>Black</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const games = {
+            'kasparov-topalov': {
+                moves: [
+                    { move: 1, white: 'e4', black: 'd6' },
+                    { move: 2, white: 'd4', black: 'Nf6' },
+                    { move: 3, white: 'Nc3', black: 'g6' },
+                    { move: 4, white: 'Be3', black: 'Bg7' },
+                    { move: 5, white: 'Qd2', black: 'c6' },
+                    { move: 6, white: 'f3', black: 'b5' },
+                    { move: 7, white: 'Nge2', black: 'Nbd7' },
+                    { move: 8, white: 'Bh6', black: 'Bxh6' },
+                    { move: 9, white: 'Qxh6', black: 'Bb7' },
+                    { move: 10, white: 'a3', black: 'e5' },
+                    { move: 11, white: 'O-O-O', black: 'Qe7' },
+                    { move: 12, white: 'Kb1', black: 'a6' },
+                    { move: 13, white: 'Nc1', black: 'O-O-O' },
+                    { move: 14, white: 'Nb3', black: 'exd4' },
+                    { move: 15, white: 'Rxd4', black: 'c5' },
+                    { move: 16, white: 'Rd1', black: 'Nb6' },
+                    { move: 17, white: 'g3', black: 'Kb8' },
+                    { move: 18, white: 'Na5', black: 'Ba8' },
+                    { move: 19, white: 'Bh3', black: 'd5' },
+                    { move: 20, white: 'Qf4+', black: 'Ka7' },
+                    { move: 21, white: 'Rhe1', black: 'd4' },
+                    { move: 22, white: 'Nd5', black: 'Nbxd5' },
+                    { move: 23, white: 'exd5', black: 'Qd6' },
+                    { move: 24, white: 'Rxd4', black: 'cxd4' },
+                    { move: 25, white: 'Re7+', black: 'Kb6' },
+                    { move: 26, white: 'Qxd4+', black: 'Kxa5' },
+                    { move: 27, white: 'b4+', black: 'Ka4' },
+                    { move: 28, white: 'Qc3', black: 'Qxd5' },
+                    { move: 29, white: 'Ra7', black: 'Bb7' },
+                    { move: 30, white: 'Rxb7', black: 'Qc4' },
+                    { move: 31, white: 'Qxf6', black: 'Kxa3' },
+                    { move: 32, white: 'Qxa6+', black: 'Kxb4' },
+                    { move: 33, white: 'c3+', black: 'Kxc3' },
+                    { move: 34, white: 'Qa1+', black: 'Kd2' },
+                    { move: 35, white: 'Qb2+', black: 'Kd1' },
+                    { move: 36, white: 'Bf1', black: 'Rd2' },
+                    { move: 37, white: 'Rd7', black: 'Rxd7' },
+                    { move: 38, white: 'Bxc4', black: 'bxc4' },
+                    { move: 39, white: 'Qxh8', black: 'Rd3' },
+                    { move: 40, white: 'Qa8', black: 'c3' },
+                    { move: 41, white: 'Qa4+', black: 'Ke1' },
+                    { move: 42, white: 'f4', black: 'f5' },
+                    { move: 43, white: 'Kc1', black: 'Rd2' },
+                    { move: 44, white: 'Qa7', black: '' }
+                ],
+                stats: {
+                    white: [85, 3, 15, 10, 2, 3, 1],
+                    black: [78, 2, 12, 8, 4, 5, 2]
+                }
+            },
+            'fischer-spassky': {
+                moves: [
+                    { move: 1, white: 'c4', black: 'e6' },
+                    { move: 2, white: 'Nf3', black: 'd5' },
+                    { move: 3, white: 'd4', black: 'Nf6' },
+                    { move: 4, white: 'Nc3', black: 'Be7' },
+                    { move: 5, white: 'Bg5', black: 'O-O' },
+                    { move: 6, white: 'e3', black: 'h6' },
+                    { move: 7, white: 'Bh4', black: 'b6' },
+                    { move: 8, white: 'cxd5', black: 'Nxd5' },
+                    { move: 9, white: 'Bxe7', black: 'Qxe7' },
+                    { move: 10, white: 'Nxd5', black: 'exd5' },
+                    { move: 11, white: 'Rc1', black: 'Be6' },
+                    { move: 12, white: 'Qa4', black: 'c5' },
+                    { move: 13, white: 'Qa3', black: 'Rc8' },
+                    { move: 14, white: 'Bb5', black: 'a6' },
+                    { move: 15, white: 'dxc5', black: 'bxc5' },
+                    { move: 16, white: 'O-O', black: 'Ra7' },
+                    { move: 17, white: 'Be2', black: 'Nd7' },
+                    { move: 18, white: 'Nd4', black: 'Qf8' },
+                    { move: 19, white: 'Nxe6', black: 'fxe6' },
+                    { move: 20, white: 'e4', black: 'd4' },
+                    { move: 21, white: 'f4', black: 'Qe7' },
+                    { move: 22, white: 'e5', black: 'Rb8' },
+                    { move: 23, white: 'Bc4', black: 'Kh8' },
+                    { move: 24, white: 'Qh3', black: 'Nf8' },
+                    { move: 25, white: 'b3', black: 'a5' },
+                    { move: 26, white: 'f5', black: 'exf5' },
+                    { move: 27, white: 'Rxf5', black: 'Nh7' },
+                    { move: 28, white: 'Rcf1', black: 'Qd8' },
+                    { move: 29, white: 'Qg3', black: 'Re7' },
+                    { move: 30, white: 'h4', black: 'Rbb7' },
+                    { move: 31, white: 'e6', black: 'Rbc7' },
+                    { move: 32, white: 'Qe5', black: 'Qe8' },
+                    { move: 33, white: 'a4', black: 'Qd8' },
+                    { move: 34, white: 'R1f2', black: 'Qe8' },
+                    { move: 35, white: 'R2f3', black: 'Qd8' },
+                    { move: 36, white: 'Bd3', black: 'Qe8' },
+                    { move: 37, white: 'Qe4', black: 'Nf6' },
+                    { move: 38, white: 'Rxf6', black: 'Kg8' },
+                    { move: 39, white: 'Rxf6', black: 'Rf8' },
+                    { move: 40, white: 'Bc4', black: 'Kh8' },
+                    { move: 41, white: 'Qf4', black: '' }
+                ],
+                stats: {
+                    white: [90, 4, 17, 12, 1, 2, 0],
+                    black: [82, 3, 14, 9, 3, 4, 1]
+                }
+            },
+            'carlsen-anand': {
+                moves: [
+                    { move: 1, white: 'e4', black: 'e5' },
+                    { move: 2, white: 'Nf3', black: 'Nc6' },
+                    { move: 3, white: 'Bb5', black: 'Nf6' },
+                    { move: 4, white: 'd3', black: 'Bc5' },
+                    { move: 5, white: 'O-O', black: 'd6' },
+                    { move: 6, white: 'Re1', black: 'O-O' },
+                    { move: 7, white: 'Bxc6', black: 'bxc6' },
+                    { move: 8, white: 'h3', black: 'Re8' },
+                    { move: 9, white: 'Nbd2', black: 'Nd7' },
+                    { move: 10, white: 'Nc4', black: 'Bb6' },
+                    { move: 11, white: 'a4', black: 'a5' },
+                    { move: 12, white: 'Nxb6', black: 'cxb6' },
+                    { move: 13, white: 'd4', black: 'Qc7' },
+                    { move: 14, white: 'Ra3', black: 'Nf8' },
+                    { move: 15, white: 'dxe5', black: 'dxe5' },
+                    { move: 16, white: 'Nh4', black: 'Rd8' },
+                    { move: 17, white: 'Qh5', black: 'f6' },
+                    { move: 18, white: 'Nf5', black: 'Be6' },
+                    { move: 19, white: 'Rg3', black: 'Ng6' },
+                    { move: 20, white: 'h4', black: 'Bxf5' },
+                    { move: 21, white: 'exf5', black: 'Nf4' },
+                    { move: 22, white: 'Bxf4', black: 'exf4' },
+                    { move: 23, white: 'Rc3', black: 'c5' },
+                    { move: 24, white: 'Re6', black: 'Rab8' },
+                    { move: 25, white: 'Rc4', black: 'Qd7' },
+                    { move: 26, white: 'Kh2', black: 'Rf8' },
+                    { move: 27, white: 'Rce4', black: 'Rb7' },
+                    { move: 28, white: 'Qe2', black: 'b5' },
+                    { move: 29, white: 'b3', black: 'bxa4' },
+                    { move: 30, white: 'bxa4', black: 'Rb4' },
+                    { move: 31, white: 'Re7', black: 'Qd6' },
+                    { move: 32, white: 'Qf3', black: 'Rxe4' },
+                    { move: 33, white: 'Qxe4', black: 'f3' },
+                    { move: 34, white: 'g3', black: 'h5' },
+                    { move: 35, white: 'Qb7', black: '' }
+                ],
+                stats: {
+                    white: [92, 5, 20, 15, 0, 1, 0],
+                    black: [88, 4, 18, 14, 2, 3, 1]
+                }
+            }
+        };
+
+        function loadGame(gameKey) {
+            const game = games[gameKey];
+
+            // Update moves
+            const scoresheet = document.getElementById('scoresheet').querySelector('tbody');
+            scoresheet.innerHTML = '';
+            game.moves.forEach(({ move, white, black }) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${move}</td>
+                    <td class="moves" onclick="showPosition('${white}')">${white}</td>
+                    <td class="moves" onclick="showPosition('${black}')">${black}</td>
+                `;
+                scoresheet.appendChild(row);
+            });
+
+            // Update stats
+            const whiteStats = document.getElementById('white-stats');
+            const blackStats = document.getElementById('black-stats');
+            whiteStats.innerHTML = '<h3>White</h3>' + game.stats.white.map(stat => `<div class="stats-row">${stat}</div>`).join('');
+            blackStats.innerHTML = '<h3>Black</h3>' + game.stats.black.map(stat => `<div class="stats-row">${stat}</div>`).join('');
+
+            initializeBoard();
+        }
+
+        const pieces = {
+            'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙',
+            'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟'
+        };
+
+        const initialBoard = [
+            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
+        ];
+
+        function initializeBoard() {
+            const board = document.getElementById('chess-board');
+            board.innerHTML = '';
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = (row + col) % 2 === 1 ? 'dark' : 'light';
+                    const piece = initialBoard[row][col];
+                    if (piece) {
+                        const pieceElement = document.createElement('span');
+                        pieceElement.textContent = pieces[piece];
+                        pieceElement.className = `piece ${piece === piece.toUpperCase() ? 'white-piece' : 'black-piece'}`;
+                        square.appendChild(pieceElement);
+                    }
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        function showPosition(move) {
+            console.log(`Move clicked: ${move}`);
+            // Logic for interpreting moves and updating the board can be implemented here
+        }
+
+        initializeBoard();
+            // Logic to place pieces based on "move" can be added here.
+        
+
+        // Load default game
+        loadGame('kasparov-topalov');
+
+    </script>
+</body>
+</html>
